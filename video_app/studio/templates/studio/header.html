@@ -1,0 +1,19 @@
+<header>
+    <nav>
+      <a href="/">Home</a>
+  
+      <a href="" class="upload-btn">Upload</a>
+      
+      {% if user.is_authenticated %}
+      <!-- show log out link if user is already logged in -->
+      <a href="{% url 'document/logout' %}">Logout</a>
+  
+      {% else %}
+  
+      <!-- show log in and sing up links otherwise   -->
+      <a href="{% url 'document/login' %}">Login</a>
+      <a href="{% url 'document/signup' %}">Signup</a>
+  
+      {% endif %}
+    </nav>
+  </header>

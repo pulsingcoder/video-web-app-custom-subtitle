@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'studio/studio.css' %}">
+    <link rel="stylesheet" href="{% static 'studio/authenication.css' %}">
+
+
+</head>
+
+<body>
+    <div id='app'>
+        <div class="authBox">
+            <h3 class="headingLabel">Sign In</h3>
+            <form method="post">
+                {% csrf_token %}
+                {% comment %} {{ form.as_p }} {% endcomment %}
+                {{ form.non_field_errors }}
+                <div class="fieldWrapper">
+                    <label class="authLabel" for="id_username">Username</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+
+                </div>
+                <div class="fieldWrapper">
+                    <label class="authLabel" for="id_password">Password</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required>
+                </div>
+                <button type="submit"
+                    style="background-color: #272c50; border-color: #232533; color: #9c9fb0; outline: none;"
+                    class="btn btn-danger btn-lg">Sign In</button>
+                <!-- <button type="submit">Login</button> -->
+            </form>
+            <br>
+            <span style="font-size: large; color: #9c9fb0; font-family: Tahoma, sans-serif;"> New here?</span>
+            <a href = '/signup'>Let's Sign Up</a>
+            <!-- <button onclick="location.href = '/signup';" id="myButton" class="float-left submit-button">Create
+                Account</button> -->
+        </div>
+    </div>
+
+</body>
+<script src='https://unpkg.com/vue@3.3.4/dist/vue.global.js'> </script>
+<script src='https://unpkg.com/axios@1.4.0/dist/axios.min.js'></script>
+
+
+</html>

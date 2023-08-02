@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploader</title>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css'>
+</head>
+<body>
+    <section class='section' id='app'>
+        
+        <div class='container'>
+            <h1 class='title mb-6'> Uploader </h1>
+            <div class="progress mb-6" v-if="document">
+                <progress class="progress is-primary" :value="progress" max="100">[[progress]]%</progress>
+            </div>
+            <div class="file">
+                <label class="file-label">
+                    <input type="file" ref="file" class="file-input" @change="selectFile">
+                    <span class="file-cta">
+                        <span class="file-label" > Choose a file</span>
+                    </span>
+                </label>   
+            </div>
+            <button class="button is-primary mt-6" v-if="document" @click="upload">Upload</button>
+            <div class="notification mt-6" v-if="message">[[message]]</div>
+        </div>
+
+
+    </section>
+
+    <script src='https://unpkg.com/vue@3.3.4/dist/vue.global.js'> </script>
+    <script src='https://unpkg.com/axios@1.4.0/dist/axios.min.js'></script>  
+    <script>
+        const {createApp} = Vue
+
+        createApp({
+            data() {
+                return {
+                    message: '',
+                    progress: 0,
+                    document: null
+                }
+            },
+            delimeters: ['[[', ']]'],
+            methods: {
+                selectFile() {
+                    this.document = this.$refs.file.files.item(0)
+                },
+                upload() {
+                    this.progress = 0;
+                    this.performUpload(this.document, event => {
+                        this.progress = Math.round((100 * event.loaded) / event.total)
+                    })
+                    .then(response => {
+                        this.message = "File has been uploaded";
+                        console.log(this.message)
+                        this.document = null;
+                    })
+                    .catch(error=>{
+                        this.progress = 0;
+                        this.message = 'Something went wrong try again';
+                        this.document = null;
+                    }) 
+
+                },
+                performUpload(file, onUploadProgress) {
+                    let formData = new FormData()
+                    console.log(file)
+                    formData.append('document', file)
+                    return axios
+                        .post('/upload/', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'X-CSRFToken': "{{csrf_token}}"
+                            },
+                            onUploadProgress
+                        })
+                }
+
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

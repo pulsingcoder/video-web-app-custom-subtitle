@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{% static 'studio/studio.css' %}" />
+  <link rel="stylesheet" href="{% static 'studio/dashboard.css' %}" />
+</head>
+
+<body>
+  <div id="app">
+    <section class="topbar-wrapper">
+      <div class="topbar">
+        <a href="/logout">Logout</a>
+      </div>
+    </section>
+    <div class="dashboard-container">
+      <div class="dashboard-heading">{{user}}'s Gallery</div>
+      <div class="dashboard-video-container">
+        {% for video in videos %}
+        <video class="dashboard-video" controls>
+          <source src="/media/{{ video.videoFile }}" type="video/mp4" />
+
+          <track src="/media/{{ video.subtitleFile }}" kind="subtitles" srclang="en" label="Custom Subtitles"
+            default="default">
+
+          Your browser does not support the video tag.
+        </video>
+
+        {% endfor%}
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
+<script src="https://unpkg.com/axios@1.4.0/dist/axios.min.js"></script>
+
+<script>
+  let videos = document.querySelectorAll("video");
+  videos.forEach((play) =>
+    play.addEventListener("click", () => {
+      play.classList.toggle("dashboard-active");
+      if (play.paused) {
+        play.play();
+      } else {
+        play.pause();
+        play.currentTime = 0;
+      }
+    })
+  );
+
+</script>
+
+</html>

@@ -1,0 +1,40 @@
+body {
+    background-color: #122121;
+}
+
+.authBox {
+    transform: translate(-50%, -50%);
+    top: 50%;
+    position: absolute;
+    left: 50%;
+}
+
+.authLabel {
+font-size: 2rem;
+color: white;
+}
+
+.authInputField {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 0.9375rem + 2px);
+    padding: 0.46875rem 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    background-clip: padding-box;
+    border: 1px solid #c0ccda;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.fieldWrapper {
+    margin-bottom: 11%;
+}
+
+.headingLabel {
+    font-size: 4rem;
+    margin-bottom: 13%;
+    color: white;
+}
+

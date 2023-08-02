@@ -1,0 +1,385 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'studio/studio.css' %}">
+
+</head>
+
+<body>
+    <div id='app'>
+        <section class='topbar-wrapper'>
+            <div class='topbar'>
+                <a href="/logout">Logout</a>
+                <button type="button" style="background-color: #232533; border-color: #232533; color: #9c9fb0;"
+                    class="btn btn-danger btn-lg" style="outline: none;" @click="upload">Export</button>
+                <button type="button" style="background-color: #232533; border-color: #232533; color: #9c9fb0;"
+                    class="btn btn-danger btn-lg" style="outline: none;" @click="addSubtitle">Update Subtitle</button>
+            </div>
+
+        </section>
+        <div class="video-layer">
+
+            <div v-if="isFileUploaded">
+                <!-- <span> "userVideoURL"</span> -->
+                <video ref="videoRef" width="640" height="420" controls>
+                    <source :src="userVideoURL" type="video/mp4">
+                    <track v-if="customSubtitles" :src="customSubtitles" kind="subtitles" srclang="en"
+                        label="Custom Subtitles">
+
+
+                    Your browser does not support the video tag.
+                </video>
+
+
+
+
+
+            </div>
+
+            <div v-else>
+                <div class="uploadBox" style="border: #232533; margin-bottom: 54px;">
+                    <span style="font-size: large; color: #9c9fb0; font-family: Tahoma, sans-serif;"> Upload your video
+                        here </span>
+                    <input type="file" ref="file" class="file-input" @change="selectFile">
+
+                </div>
+            </div>
+
+        </div>
+        <section class='sidebar-wrapper overlay'>
+            <div class='sidebar-header' style="padding: 15px;">
+                <div style="width: 5px; height: 33px; background-color: blue;margin-right: 10px; margin-top: -3px; ">
+                </div>
+                <span style="font-size: large; color: white; font-family: Tahoma, sans-serif;"> Add Subtitles to Video
+                </span>
+
+            </div>
+            <div class="upload-download-btn">
+
+                <button type="button" style="background-color: #232533; border-color: #232533; color: #9c9fb0;"
+                    class="btn btn-danger btn-lg" style="outline: none;">Upload VTT</button>
+                <button type="button"
+                    style="background-color: #232533; border-color: #232533; color: #9c9fb0; outline: none;"
+                    class="btn btn-danger btn-lg" @click="exportSubtitles">Download VTT</button>
+            </div>
+
+            <div class='sidebar-header' style="padding: 30px 15px 15px 15px;">
+                <span style="font-size: large; color: #9c9fb0; font-family: Tahoma, sans-serif;"> Add your subtitles and
+                    set the time </span>
+
+            </div>
+
+
+            <div class="input-subtitle">
+                <div class="form-group">
+                    <div v-for="(input, index) in subtitles" :key="`phoneInput-${index}`">
+                        <div class="subtitleTimeData">
+                            <img src="{% static 'studio/clock.png' %}" style="margin-top: 10px;" width="24"
+                                height="24">
+                            <div id="start-time" class="hhmmssBox">
+
+                                <input v-model="input.startTime.hh" class="hhmmss" id="hh_1" type="number" min="0"
+                                    max="24" placeholder="00" :value="padZero(input.startTime.hh)">:
+                                <input v-model="input.startTime.mm" class="hhmmss" id="mm_1" type="number" min="0"
+                                    max="60" placeholder="00" :value="padZero(input.startTime.mm)">:
+                                <input v-model="input.startTime.ss" class="hhmmss" id="ss_1" type="number" min="0"
+                                    max="60" placeholder="00" :value="padZero(input.startTime.ss)">
+
+                            </div>
+                            <!-- <input class="subtitleInputTimeBox" value="00:00:00" min="00:00:00" max="00:00:00" type="time" step="1"> -->
+                            <span style="font-size: X-large; color: #9c9fb0; font-family: Tahoma, sans-serif;">-</span>
+                            <!-- <input class="subtitleInputTimeBox" value="00:00:00" type="time" step="1"> -->
+                            <div id='endTime' class="hhmmssBox">
+                                <input @input="addSubtitle(index, subtitles)" v-model="input.endTime.hh" class="hhmmss"
+                                    id="hh_1" type="number" min="0" max="24" placeholder="00"
+                                    :value="padZero(input.endTime.hh)">:
+                                <input @input="addSubtitle(index, subtitles)" v-model="input.endTime.mm" class="hhmmss"
+                                    id="mm_1" type="number" min="0" max="60" placeholder="00"
+                                    :value="padZero(input.endTime.mm)">:
+                                <input @input="addSubtitle(index, subtitles)" v-model="input.endTime.ss" class="hhmmss"
+                                    id="ss_1" type="number" min="0" max="60" placeholder="00"
+                                    :value="padZero(input.endTime.ss)">
+
+                            </div>
+
+                        </div>
+                        <div class="subtitleMessageData">
+                            <!-- <input class="subtitleMessageBox" v-model="input.message" type="text" class="form-control" id="usr"> -->
+                            <textarea name="Text1" cols="40" rows="5" v-model="input.message" class="subtitleMessageBox"
+                                @input="addSubtitle(index, subtitles)">Your Text here</textarea>
+                            <div id="subtitle-actions" class="subtitleActions">
+                                <img src="{% static 'studio/delete.png' %}" style="margin-top: 10px;"
+                                    @click="deleteSubtitle(index, subtitles)" width="34" height="34">
+                                <img src="{% static 'studio/plus.png' %}" style="margin-top: 10px;"
+                                    @click="addNewSubtitle(input, subtitles)" width="34" height="34">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div style="display: flex; justify-content: center;">
+
+                    <button type="button" style="background-color: #232533; border-color: #232533; color: #9c9fb0;"
+                        class="btn btn-danger btn-lg" style="outline: none; align-items: center;"
+                        @click="addNewSubtitle(input, subtitles)">+ Add Subtitle</button>
+                </div>
+
+        </section>
+
+        <section class='bottombar-wrapper'>
+            <div class='topbar'>
+            </div>
+        </section>
+
+
+
+    </div>
+
+</body>
+<script src='https://unpkg.com/vue@3.3.4/dist/vue.global.js'> </script>
+<script src='https://unpkg.com/axios@1.4.0/dist/axios.min.js'></script>
+
+<script>
+    const { createApp } = Vue
+
+    studioVueApp = createApp({
+        data() {
+            return {
+                subtitles: [
+                    // {
+                    //     startTime: {
+                    //         hh: '00',
+                    //         mm: '00',
+                    //         ss: '00'
+                    //     },
+                    //     endTime: {
+                    //         hh: '00',
+                    //         mm: '00',
+                    //         ss: '00'
+                    //     },
+                    //     message: ""
+                    // },
+                ],
+                subtitlesTrack: [],
+                isFileUploaded: false,
+                videoFile: null,
+                userVideoURL: null,
+                customSubtitles: null,
+                subtitleCues: [
+
+                ],
+                track: null,
+                subtitleFile: null,
+
+
+            }
+        },
+        delimeters: ['[[', ']]'],
+        methods: {
+            addNewSubtitle(value, fieldType) {
+                console.log(fieldType)
+                console.log(value)
+                fieldType.push({
+                    startTime: {
+                        hh: '00',
+                        mm: '00',
+                        ss: '00'
+                    },
+                    endTime: {
+                        hh: '00',
+                        mm: '00',
+                        ss: '00'
+                    },
+                    message: ""
+                },)
+            },
+            padZero(num) {
+                // print(num)
+                this.subtitleCues.push({
+                    startTime: {
+                        hh: '00',
+                        mm: '00',
+                        ss: '00'
+                    },
+                    endTime: {
+                        hh: '00',
+                        mm: '00',
+                        ss: '00'
+                    },
+                    message: ""
+                },)
+                return num.toString().padStart(2, '0');
+
+            },
+
+
+            deleteSubtitle(index, fieldType) {
+                const startInSeconds = this.timeToSeconds(this.subtitles[index].startTime.hh, this.subtitles[index].startTime.mm, this.subtitles[index].startTime.ss);
+                const endInSeconds = this.timeToSeconds(this.subtitles[index].endTime.hh, this.subtitles[index].endTime.mm, this.subtitles[index].endTime.ss);
+                this.deleteSubtitleFromCue(startInSeconds)
+                fieldType.splice(index, 1);
+            },
+
+            selectFile() {
+                this.videoFile = this.$refs.file.files.item(0)
+                // let video = document.getElementById('video-preview');
+                let reader = new FileReader();
+                let videoURL = null, success = false;
+
+                reader.readAsDataURL(this.videoFile);
+                reader.addEventListener('load', function () {
+                    studioVueApp.$data.userVideoURL = reader.result;
+                    console.log(reader.result)
+                    studioVueApp.$data.isFileUploaded = true
+                });
+
+                if (success) {
+                    console.log("hi")
+                    this.userVideoURL = videoURL;
+                    this.isFileUploaded = true
+                }
+                console.log("her")
+                // this.upload()
+            },
+            upload() {
+                console.log("got here")
+                this.exportSubtitles()
+                this.progress = 0;
+                this.performUpload(this.videoFile, event => {
+                    this.progress = Math.round((100 * event.loaded) / event.total)
+                })
+                    .then(response => {
+                        this.message = "File has been uploaded";
+                        // this.document = null;
+                        console.log(this.message)
+                    })
+                    .catch(error => {
+                        this.progress = 0;
+                        this.message = 'Something went wrong try again';
+                        // this.document = null;
+                    })
+
+            },
+            performUpload(file, onUploadProgress) {
+                let formData = new FormData()
+                console.log(file)
+
+                formData.append('videoFile', file)
+                formData.append('subtitleFile', this.subtitleFile, 'subtitle_file.vtt')
+                formData.append('title', 'asdaf')
+                return axios
+                    .post('/upload/', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-CSRFToken': "{{csrf_token}}"
+                        },
+                        onUploadProgress
+                    })
+            },
+            isTimeInRange(currentTime, startTime, endTime) {
+                const currentTimeInSeconds = this.timeToSeconds(currentTime);
+                const startTimeInSeconds = this.timeToSeconds(startTime);
+                const endTimeInSeconds = this.timeToSeconds(endTime);
+                return currentTimeInSeconds >= startTimeInSeconds && currentTimeInSeconds <= endTimeInSeconds;
+            },
+
+            timeToSeconds(hours, minutes, seconds) {
+
+                return hours * 3600 + minutes * 60 + seconds;
+            },
+            addSubtitle(index) {
+                console.log("hi")
+                // Convert start and end time to seconds for easy comparison
+                const startInSeconds = this.timeToSeconds(this.subtitles[index].startTime.hh, this.subtitles[index].startTime.mm, this.subtitles[index].startTime.ss);
+                const endInSeconds = this.timeToSeconds(this.subtitles[index].endTime.hh, this.subtitles[index].endTime.mm, this.subtitles[index].endTime.ss);
+
+                // Only add the subtitle if the start time is before the end time and if there's a message
+                if (this.subtitles[index].message && startInSeconds < endInSeconds) {
+                    // this.subtitlesTrack.push({
+                    //     start: this.startTime,
+                    //     end: this.endTime,
+                    //     message: this.subtitleMessage
+                    // });
+
+                    // Create a new subtitle track with the added subtitle
+                    this.createSubtitleTrack(startInSeconds, endInSeconds, this.subtitles[index].message);
+
+
+                } else {
+                    // Show an error message or handle invalid input as per your requirement
+                }
+            },
+
+
+
+            deleteSubtitleFromCue(startTime) {
+                const cuesToRemove = Array.from(this.track.cues).filter(cue => cue.startTime === startTime);
+                cuesToRemove.forEach(cue => this.track.removeCue(cue));
+                console.log("removed")
+            },
+            createSubtitleTrack(start, end, message) {
+                if (this.track == null) {
+                    this.track = this.$refs.videoRef.addTextTrack('subtitles', 'Subtitle Track', 'en');
+                }
+                // alert(start)
+                this.deleteSubtitleFromCue(start);
+                this.track.mode = 'showing'; // Set the track to 'showing' to make it visible
+                this.track.addCue(new VTTCue(start, end, message));
+            },
+
+            formatTime(time) {
+                const hh = this.padZero(time.hh);
+                const mm = this.padZero(time.mm);
+                const ss = this.padZero(time.ss);
+                return `${hh}:${mm}:${ss}.000`;
+            },
+
+            exportSubtitles() {
+                const track = this.track;
+                // const vttContent = "WEBVTT\n\n" + Array.from(track.cues)
+                //     .map((cue, index) => `${cue.startTime} --> ${cue.endTime}\n${cue.text}\n\n`)
+                //     .join('');
+
+                const vttContent = "WEBVTT\n\n" + this.subtitles
+                    .map(subtitle => `${this.formatTime(subtitle.startTime)} --> ${this.formatTime(subtitle.endTime)}\n${subtitle.message}\n\n`)
+                    .join('');
+
+
+                const blob = new Blob([vttContent], { type: 'text/vtt' });
+                const url = URL.createObjectURL(blob);
+                this.subtitleFile = blob
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'subtitles.vtt';
+                a.click();
+
+                // Clean up the URL object
+                URL.revokeObjectURL(url);
+            }
+
+
+        },
+
+
+    }).mount('#app')
+
+
+
+
+
+
+</script>
+
+</html>
